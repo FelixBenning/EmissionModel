@@ -1,0 +1,12 @@
+name: EmissionModel
+title: EmissionModel
+username:
+account: felix-benning
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1120383
+bundleId: 2369150
+url: https://felix-benning.shinyapps.io/emissionmodel/
+when: 1567111300.92787
+asMultiple: FALSE
+asStatic: FALSE
