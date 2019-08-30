@@ -1,11 +1,14 @@
 #server.R
 
 function(input,output, session){
+  budgetInfo <- reactive({budgetEstimation[which(budgetEstimation$name == input$budgetName), ]})
+  
   worldBudget <- reactive({
-    if(input$institute == "Custom") {
+    if(input$budgetName == "Custom") {
       input$budgetGt
     } else {
-      budgetEstimation[which(budgetEstimation$institute == input$institute), ]$budgetEstimation
+      b <- budgetInfo()$budgetEstimation - (currentYearDecimal() - budgetInfo()$year)*input$yearlyGt
+      b
     }
   })
   
@@ -18,7 +21,7 @@ function(input,output, session){
     }
   })
   
-  ydelta <- reactive({input$switchYear-2019})
+  ydelta <- reactive({input$switchYear-currentYearDecimal()})
   logBase <- reactive({
     (euBudgY()-ydelta()-sqrt((euBudgY()-ydelta())^2+4*(ydelta()*euBudgY()-ydelta()^2/2)))/(2*ydelta()*euBudgY()-ydelta()^2)
   })
@@ -35,23 +38,23 @@ function(input,output, session){
     factor<--1/(2*euBudgY())
     linear<-factor*t+1
     
-    df<-data.frame(year=c(t,t)+2019,emissions=c(y,linear)*100)
+    df<-data.frame(year=c(t,t)+currentYearDecimal(),emissions=c(y,linear)*100)
     ggplot(df, aes(x=year, y=emissions))+
       geom_line(linetype = "dashed")+
       geom_point()+
       ylim(0,100)
   })
   output$reductionFactors<-renderText({
-    sprintf("%.2f %% (percentage points) reduction in the first %s years until %s. 
+    sprintf("%.2f %% (percentage points) reduction in the first %.2f years until %.0f. 
             Then exponential decrease by %.2f%%", 
             -linFactor()*100,
             ydelta(), 
-            ydelta()+2019, 
+            ydelta()+currentYearDecimal(), 
             (1-exp(logBase()))*100
     )
   })
   output$switchLinExp <- renderUI({
-    sliderInput("switchYear", "Switch from linear to exponential", 2020, floor(2019 + 2*euBudgY()), 2030)
+    sliderInput("switchYear", "Switch from linear to exponential", ceiling(currentYearDecimal()), floor(currentYearDecimal() + 2*euBudgY()), 2030)
   })
   
 }

@@ -1,24 +1,24 @@
 [
     {
-        "institute": "IPCC-AR5 1.5 66%",
+        "name": "IPCC-AR5 1.5 66%",
         "source": "https://www.ipcc.ch/sr15/chapter/spm/spm-c/",
         "year": 2018,
         "budgetEstimation": 420
     },
     {
-        "institute": "IPCC-AR5 1.5 50%",
+        "name": "IPCC-AR5 1.5 50%",
         "source": "https://www.ipcc.ch/sr15/chapter/spm/spm-c/",
         "year": 2018,
         "budgetEstimation": 580
     },
     {
-        "institute": "IPCC-GMST 1.5 50%",
+        "name": "IPCC-GMST 1.5 50%",
         "source": "https://www.ipcc.ch/sr15/chapter/spm/spm-c/",
         "year": 2018,
         "budgetEstimation": 770
     },
     {
-        "institute": "IPCC-GMST 1.5 66%",
+        "name": "IPCC-GMST 1.5 66%",
         "source": "https://www.ipcc.ch/sr15/chapter/spm/spm-c/",
         "year": 2018,
         "budgetEstimation": 570

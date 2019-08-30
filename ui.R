@@ -6,13 +6,13 @@ fluidPage(
       selectInput(inputId = "budgetAllocation", label = "Budget Allocation", c("equal", "inertia")),
       uiOutput("switchLinExp"),
       selectInput(
-        inputId = "institute", 
+        inputId = "budgetName", 
         label = "Budget Estimation", 
-        choices =  c(budgetEstimation$institute, "Custom"), 
-        selected = budgetEstimation$institute[0]
+        choices =  c(budgetEstimation$name, "Custom"), 
+        selected = budgetEstimation$name[0]
       ),
       conditionalPanel(
-        "input.institute == 'Custom'",
+        "input.budgetName == 'Custom'",
         numericInput(
           inputId = "budgetGt",
           label = "Global budget in Gt CO2",
