@@ -4,12 +4,21 @@ library(ggplot2)
 ui<-fluidPage(
   sidebarLayout(
     sidebarPanel(
-        selectInput(inputId = "budgetAllocation", NULL, c("equal", "inertia")),
+        selectInput(inputId = "budgetAllocation", label = "Budget Allocation", c("equal", "inertia")),
         uiOutput("switchLinExp"),
-        numericInput(
-          inputId = "budgetGt",
-          label = "Global budget in Gt CO2",
-          value = 350
+        selectInput(
+          inputId = "budgetEstimation", 
+          label = "Budget Estimation", 
+          choices =  c(budgetEstimation$institute, "Custom"), 
+          selected = budgetEstimation$institute[0]
+          ),
+        conditionalPanel(
+          "input.budgetEstimation == 'Custom'",
+          numericInput(
+            inputId = "budgetGt",
+            label = "Global budget in Gt CO2",
+            value = 350
+          )
         ),
         numericInput(
           inputId = "yearlyGt",
@@ -39,7 +48,15 @@ ui<-fluidPage(
 )
   
 server<-function(input,output, session){
-  worldBudgetYears <- reactive({input$budgetGt/input$yearlyGt})
+  worldBudget <- reactive({
+    if(input$budgetEstimation == "Custom") {
+      input$budgetGt
+    } else {
+      budgetEstimation[which(budgetEstimation$institute == input$budgetEstimation & budgetEstimation$probability == 0.66), ]$budgetEstimation
+    }
+  })
+  
+  worldBudgetYears <- reactive({worldBudget()/input$yearlyGt})
   euBudgY <- reactive({
     if(input$budgetAllocation == "inertia"){
       worldBudgetYears()
