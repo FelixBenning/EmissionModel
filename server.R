@@ -1,3 +1,6 @@
+library(shiny)
+library(ggplot2)
+
 #server.R
 
 function(input,output, session){
