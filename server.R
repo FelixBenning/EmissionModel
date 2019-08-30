@@ -1,58 +1,11 @@
-library(shiny)
-library(ggplot2)
+#server.R
 
-ui<-fluidPage(
-  sidebarLayout(
-    sidebarPanel(
-        selectInput(inputId = "budgetAllocation", label = "Budget Allocation", c("equal", "inertia")),
-        uiOutput("switchLinExp"),
-        selectInput(
-          inputId = "budgetEstimation", 
-          label = "Budget Estimation", 
-          choices =  c(budgetEstimation$institute, "Custom"), 
-          selected = budgetEstimation$institute[0]
-          ),
-        conditionalPanel(
-          "input.budgetEstimation == 'Custom'",
-          numericInput(
-            inputId = "budgetGt",
-            label = "Global budget in Gt CO2",
-            value = 350
-          )
-        ),
-        numericInput(
-          inputId = "yearlyGt",
-          label = "Global yearly production in Gt",
-          value = 42
-        ),
-        conditionalPanel(
-          "input.budgetAllocation == 'equal'",
-          numericInput(
-            inputId = "capitaCO2",
-            label = "World Average CO2 per Capita",
-            value = 5
-          ),
-          numericInput(
-            inputId = "euCapitaCO2",
-            label = "EU Average CO2 per Capita",
-            value = 6.4
-          )
-        )
-      ),
-    mainPanel(
-      textOutput("euBudgY"),
-      plotOutput("plot"),
-      textOutput("reductionFactors")
-    )
-  )
-)
-  
-server<-function(input,output, session){
+function(input,output, session){
   worldBudget <- reactive({
-    if(input$budgetEstimation == "Custom") {
+    if(input$institute == "Custom") {
       input$budgetGt
     } else {
-      budgetEstimation[which(budgetEstimation$institute == input$budgetEstimation & budgetEstimation$probability == 0.66), ]$budgetEstimation
+      budgetEstimation[which(budgetEstimation$institute == input$institute), ]$budgetEstimation
     }
   })
   
@@ -68,7 +21,7 @@ server<-function(input,output, session){
   ydelta <- reactive({input$switchYear-2019})
   logBase <- reactive({
     (euBudgY()-ydelta()-sqrt((euBudgY()-ydelta())^2+4*(ydelta()*euBudgY()-ydelta()^2/2)))/(2*ydelta()*euBudgY()-ydelta()^2)
-    })
+  })
   linFactor <- reactive({logBase()/(1-logBase()*ydelta())})
   expFactor <- reactive({exp(-logBase()*ydelta())/(1-logBase()*ydelta())})
   
@@ -95,12 +48,10 @@ server<-function(input,output, session){
             ydelta(), 
             ydelta()+2019, 
             (1-exp(logBase()))*100
-            )
+    )
   })
   output$switchLinExp <- renderUI({
     sliderInput("switchYear", "Switch from linear to exponential", 2020, floor(2019 + 2*euBudgY()), 2030)
   })
   
 }
-
-shinyApp(ui,server)
