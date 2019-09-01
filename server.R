@@ -42,7 +42,7 @@ function(input,output, session){
   
   output$plot<-renderPlot({
     
-    t<-seq(0,50,length=500)
+    t<-seq(0,40,length=500)
     linear <- linearFunc(t, linParams())
     switch <- switchFunc(t, ydelta(), switchParams())
     
@@ -50,7 +50,8 @@ function(input,output, session){
     ggplot(df)+
       geom_line(aes(x=year, y=linear, colour = "linear"))+
       geom_line(aes(x=year, y=switch, colour = "switch"))+
-      ylim(0,100)+guides(colour = guide_legend("Type"))
+      ylim(0,100)+
+      labs(x = "year", y = "emissions as percentage of current yearly emissions", colour = "type")
   })
   output$reductionFactors<-renderText({
     sprintf("%.2f %% (percentage points) reduction in the first %.2f years until %.0f. 

@@ -5,9 +5,9 @@ account: felix-benning
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1120383
-bundleId: 2375301
+bundleId: 2375324
 url: https://felix-benning.shinyapps.io/emissionmodel/
-when: 1567351827.66022
+when: 1567352540.18047
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: .RData|README.md
