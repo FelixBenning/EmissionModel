@@ -19,11 +19,21 @@ calcLinParams <- function(budgetYears) {
   return(params)
 }
 
+calcExpParams <- function(budgetYears) {
+  params <- data.frame(expFactor = (-1/budgetYears))
+  return(params)
+}
+
 switchFunc <- function(x, switchTime, params) {
   y <- (x<switchTime)*(params$linFactor*x+1) + (x>=switchTime)*params$expFactor*exp(params$logBase*x)
 }
+
 linearFunc <- function(x, params) {
   return((params$linFactor*x+1)*(x<params$zeroPoint))
+}
+
+expFunc <- function(x, params) {
+  return(exp(params$expFactor*x))
 }
 
 

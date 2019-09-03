@@ -34,6 +34,7 @@ function(input,output, session){
   
   switchParams <- reactive({calcSwitchParams(euBudgY(), ydelta())})
   linParams <- reactive({calcLinParams(euBudgY())})
+  expParams <- reactive({calcExpParams(euBudgY())})
   
   
   output$euBudgY <-renderText({
@@ -45,11 +46,13 @@ function(input,output, session){
     t<-seq(0,40,length=500)
     linear <- linearFunc(t, linParams())
     switch <- switchFunc(t, ydelta(), switchParams())
+    expon <- expFunc(t, expParams())
     
-    df<-data.frame(year=t+currentYearDecimal(), linear=linear*100, switch = switch*100)
+    df<-data.frame(year=t+currentYearDecimal(), linear=linear*100, switch = switch*100, expon = expon*100)
     ggplot(df)+
       geom_line(aes(x=year, y=linear, colour = "linear"))+
       geom_line(aes(x=year, y=switch, colour = "switch"))+
+      geom_line(aes(x=year, y=expon, color="exponential"))+
       ylim(0,100)+
       labs(x = "year", y = "emissions as percentage of current yearly emissions", colour = "type")
   })
@@ -63,7 +66,7 @@ function(input,output, session){
     )
   })
   output$switchLinExp <- renderUI({
-    sliderInput("switchYear", "Switch from linear to exponential", ceiling(currentYearDecimal()), floor(currentYearDecimal() + 2*euBudgY()), 2030)
+    sliderInput("switchYear", "Switch from linear to exponential", ceiling(currentYearDecimal()), floor(currentYearDecimal() + 2*euBudgY()), 2030, step = 0.5, sep="")
   })
   
 }
