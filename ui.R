@@ -3,8 +3,10 @@
 fluidPage(
   sidebarLayout(
     sidebarPanel(
-      selectInput(inputId = "budgetAllocation", label = "Budget Allocation", c("equal", "inertia")),
       uiOutput("switchLinExp"),
+      selectInput(inputId = "budgetAllocation", label = "Budget Allocation", c("equal", "inertia")),
+      textOutput("allocationExplanation"),
+      br(),
       selectInput(
         inputId = "budgetName", 
         label = "Budget Estimation", 
@@ -39,9 +41,23 @@ fluidPage(
       )
     ),
     mainPanel(
-      textOutput("euBudgY"),
-      plotOutput("plot"),
-      textOutput("reductionFactors")
+      h1("Distribution of the Budget Over Time"),
+      tabsetPanel(
+        tabPanel(
+          "Plot",
+          plotOutput("plot"),
+          h4("Linear"),
+          textOutput("linearReductionFactors"),
+          h4("Switch"),
+          textOutput("reductionFactors"),
+          h4("Exponential"),
+          textOutput("exponReductionFactors")
+        ),
+        tabPanel(
+          "Details",
+          textOutput("euBudgY")
+        )
+      )
     )
   )
 )

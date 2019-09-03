@@ -3,6 +3,14 @@ library(ggplot2)
 #server.R
 
 function(input,output, session){
+  output$allocationExplanation <- renderText({
+    if(input$budgetAllocation == "equal") {
+      "Every Person on earth gets an equal share of the remaining budget."
+    } else {
+      "Countries get a share of the total budget proportional to their current production."
+    }
+  })
+  
   budgetInfo <- reactive({budgetEstimation[which(budgetEstimation$name == input$budgetName), ]})
   
   worldBudget <- reactive({
@@ -23,7 +31,7 @@ function(input,output, session){
     }
   })
   
-  ydelta <- reactive({
+  switchYFromNow <- reactive({
     if(is.null(input$switchYear)) {
       2030 -currentYearDecimal()
     } else {
@@ -32,7 +40,7 @@ function(input,output, session){
     
     })
   
-  switchParams <- reactive({calcSwitchParams(euBudgY(), ydelta())})
+  switchParams <- reactive({calcSwitchParams(euBudgY(), switchYFromNow())})
   linParams <- reactive({calcLinParams(euBudgY())})
   expParams <- reactive({calcExpParams(euBudgY())})
   
@@ -45,7 +53,7 @@ function(input,output, session){
     
     t<-seq(0,40,length=500)
     linear <- linearFunc(t, linParams())
-    switch <- switchFunc(t, ydelta(), switchParams())
+    switch <- switchFunc(t, switchYFromNow(), switchParams())
     expon <- expFunc(t, expParams())
     
     df<-data.frame(year=t+currentYearDecimal(), linear=linear*100, switch = switch*100, expon = expon*100)
@@ -57,14 +65,31 @@ function(input,output, session){
       labs(x = "year", y = "emissions as percentage of current yearly emissions", colour = "type")
   })
   output$reductionFactors<-renderText({
-    sprintf("%.2f %% (percentage points) reduction in the first %.2f years until %.0f. 
-            Then exponential decrease by %.2f%%", 
-            -switchParams()$linFactor*100,
-            ydelta(), 
-            ydelta()+currentYearDecimal(), 
-            (1-exp(switchParams()$logBase))*100
+    sprintf(
+    "%.2f%% (percentage points) reduction in the first %.2f years until %.0f. 
+    Then exponential decrease by %.2f%% compared to the previous year, every year.", 
+    -switchParams()$linFactor*100,
+    switchYFromNow(), 
+    switchYFromNow()+currentYearDecimal(), 
+    (1-exp(switchParams()$logBase))*100
     )
   })
+  
+  output$linearReductionFactors <- renderText({
+    sprintf(
+      "%.2f%% (percentage points) reduction until the Year %.0f",
+      -linParams()$linFactor*100,
+      linParams()$zeroPoint+currentYearDecimal()
+    )
+  })
+  
+  output$exponReductionFactors <- renderText({
+    sprintf(
+      "%.2f%% reduction compared to the previous year, every year",
+      -expParams()$expFactor*100
+    )
+  })
+  
   output$switchLinExp <- renderUI({
     sliderInput("switchYear", "Switch from linear to exponential", ceiling(currentYearDecimal()), floor(currentYearDecimal() + 2*euBudgY()), 2030, step = 0.5, sep="")
   })
