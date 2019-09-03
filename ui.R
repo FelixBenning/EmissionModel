@@ -1,6 +1,7 @@
 # ui.R
 
 fluidPage(
+  h1("Distribution of the Carbon Budget Over Time"),
   sidebarLayout(
     sidebarPanel(
       uiOutput("switchLinExp"),
@@ -41,7 +42,6 @@ fluidPage(
       )
     ),
     mainPanel(
-      h1("Distribution of the Budget Over Time"),
       tabsetPanel(
         tabPanel(
           "Plot",

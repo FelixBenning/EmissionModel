@@ -5,7 +5,7 @@ library(ggplot2)
 function(input,output, session){
   output$allocationExplanation <- renderText({
     if(input$budgetAllocation == "equal") {
-      "Every Person on earth gets an equal share of the remaining budget."
+      "Every person on earth gets an equal share of the remaining budget."
     } else {
       "Countries get a share of the total budget proportional to their current production."
     }
