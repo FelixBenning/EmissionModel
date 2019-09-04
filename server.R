@@ -3,7 +3,18 @@ library(ggplot2)
 #server.R
 
 function(input,output, session){
-  output$allocationExplanation <- renderText({
+
+  ## Sidebar ##
+  output$budgetID <- renderUI({
+    selectInput(
+      inputId = "budgetId", 
+      label = "CO2 Budget Estimation for that Target", 
+      choices =  c(budgetEstimation[sprintf("%.1f°C", budgetEstimation$target) == input$target,]$name, "Custom"), 
+      selected = budgetEstimation$name[0]
+    )
+  })
+
+    output$allocationExplanation <- renderText({
     if(input$budgetAllocation == "equal") {
       "Every person on earth gets an equal share of the remaining budget."
     } else {
@@ -11,16 +22,29 @@ function(input,output, session){
     }
   })
   
-  budgetInfo <- reactive({budgetEstimation[which(budgetEstimation$name == input$budgetId), ]})
+  output$switchLinExp <- renderUI({
+    sliderInput(
+      inputId = "switchYear", 
+      label = "Switch from linear to exponential", 
+      min = ceiling(currentYearDecimal()), 
+      max = floor(currentYearDecimal() + 2*euBudgY()), 
+      value = 2030, 
+      step = 0.5, 
+      sep="")
+  })
+
+  ## reacitive Variables ##
+  budgetEntry <- reactive({
+    budgetEstimation[budgetEstimation$name == input$budgetId, ]
+  })
   
   worldBudget <- reactive({
     req(input$budgetId)
-    if(input$budgetId == "Custom") {
+    if (!is.null(input$budgetId)) {
+      b <- budgetEntry()$budgetEstimation - (currentYearDecimal() - budgetEntry()$year)*input$yearlyGt
+    } else if(input$budgetId == "Custom") {
       input$budgetGt
-    } else if (!is.null(input$budgetId)) {
-      b <- budgetInfo()$budgetEstimation - (currentYearDecimal() - budgetInfo()$year)*input$yearlyGt
-      b
-    }
+    } 
   })
   
   worldBudgetYears <- reactive({worldBudget()/input$yearlyGt})
@@ -40,39 +64,9 @@ function(input,output, session){
   switchParams <- reactive({calcSwitchParams(euBudgY(), switchYFromNow())})
   linParams <- reactive({calcLinParams(euBudgY())})
   expParams <- reactive({calcExpParams(euBudgY())})
-  
-  budgetRow <-reactive({
-    budgetEstimation[budgetEstimation$name == input$budgetId,]
-  })
  
-  output$globalBudget <- renderUI({
-    tagList(
-      h3("Global CO2 Budget"), 
-      " according to ", a(href=budgetRow()$source, input$budgetId), "in order to limit warming to ", budgetRow()$target, "°C",
-       h4(sprintf("at the beginning of the year %.0f: %.0f Gt", budgetRow()$year , budgetRow()$budget)),
-       h4(sprintf("now: %.0f Gt", worldBudget())),
-       h4(sprintf("In years of current emissions: %.2f years", worldBudgetYears())),
-      yearlyBudgetEstimationText
-    )
-  })
-  allocationHelpText<-reactive({
-    if(input$budgetAllocation == "equal"){
-      budgetAllocationEqualText
-    } else if(input$budgetAllocation == "inertia"){
-      budgetAllocationInertiaText
-    }
-  })
-  output$euBudget <- renderUI({
-    tagList(
-      h3("EU CO2 Budget"),
-      h4(sprintf("In years of current EU emission: %.2f years", euBudgY())),
-      allocationHelpText()
-    )
-  })
-  
-  
+  ## Plot Tab ##
   output$plot<-renderPlot({
-    
     t<-seq(0,40,length=500)
     linear <- linearFunc(t, linParams())
     switch <- switchFunc(t, switchYFromNow(), switchParams())
@@ -86,7 +80,7 @@ function(input,output, session){
       ylim(0,100)+
       labs(x = "year", y = "emissions as percentage of current yearly emissions", colour = "type")
   })
-  output$reductionFactors<-renderText({
+  output$switchReductionFactors<-renderText({
     sprintf(
     "%.2f%% (percentage points) reduction in the first %.2f years until %.0f. 
     Then exponential decrease by %.2f%% compared to the previous year, every year.", 
@@ -112,24 +106,30 @@ function(input,output, session){
     )
   })
   
-  output$budgetID <- renderUI({
-    selectInput(
-      inputId = "budgetId", 
-      label = "CO2 Budget Estimation for that Target", 
-      choices =  c(budgetEstimation[sprintf("%.1f°C", budgetEstimation$target) == input$target,]$name, "Custom"), 
-      selected = budgetEstimation$name[0]
+  ## Details Tab ##
+  output$globalBudgetText <- renderUI({
+    tagList(
+      h3("Global CO2 Budget"), 
+      " according to ", a(href=budgetEntry()$source, input$budgetId), "in order to limit warming to ", budgetEntry()$target, "°C",
+       h4(sprintf("at the beginning of the year %.0f: %.0f Gt", budgetEntry()$year , budgetEntry()$budget)),
+       h4(sprintf("now: %.0f Gt", worldBudget())),
+       h4(sprintf("In years of current emissions: %.2f years", worldBudgetYears())),
+      yearlyBudgetEstimationText
     )
   })
-  
-  output$switchLinExp <- renderUI({
-    sliderInput(
-      inputId = "switchYear", 
-      label = "Switch from linear to exponential", 
-      min = ceiling(currentYearDecimal()), 
-      max = floor(currentYearDecimal() + 2*euBudgY()), 
-      value = 2030, 
-      step = 0.5, 
-      sep="")
+  allocationHelpText<-reactive({
+    if(input$budgetAllocation == "equal"){
+      budgetAllocationEqualText
+    } else if(input$budgetAllocation == "inertia"){
+      budgetAllocationInertiaText
+    }
+  })
+  output$euBudget <- renderUI({
+    tagList(
+      h3("EU CO2 Budget"),
+      h4(sprintf("In years of current EU emission: %.2f years", euBudgY())),
+      allocationHelpText()
+    )
   })
   
 }
