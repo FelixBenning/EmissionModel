@@ -1,0 +1,103 @@
+\documentclass[11pt, a4paper]{article}
+\title{Switch Distribution}
+\author{Felix Benning}
+
+\usepackage{mathtools}
+
+%%%%%%%%%%%%%%%%%%%%% ARROWS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+%arrow with explanation 
+%(https://tex.stackexchange.com/questions/467779/alignment-of-implication-arrows-with-text-on-top)
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\newcommand*{\sm@shstack}[3][lr]{
+	\mathrel{% makes the resulting stack a relation class (like =,<,>,...)
+		\smashoperator[#1]{\mathop{#2}^{#3}}}
+}
+
+\newcommand*{\lx@rrow}[2]{ %uses leftsides smashoperator thus ignoring overlap towards the left
+	\sm@shstack[l]{#2}{#1}
+}
+%use when aligning to the left
+\newcommand*{\x@rrow}[2]{%uses no smashoperator, but adds back stretchability of \implies to the result contrary to \stackrel
+	\;\mkern-\thickmuskip\mathop{#2}\limits^{#1}\;\mkern-\thickmuskip
+}%use in \(\) and as individual operator without aligning necessities
+
+
+\newcommand*{\lximplies}[1]{\lx@rrow{#1}{\implies}} %%%%% =>
+\newcommand*{\lximpliedby}[1]{\lx@rrow{#1}{\impliedby}} %%%%%% <=
+\newcommand*{\lxiff}[1]{\lx@rrow{#1}{\iff}} %%%%%%%%%%%%% <=>
+\newcommand*{\lxeq}[1]{\lx@rrow{#1}{=}} %%%%%%%%%% =
+\newcommand*{\lxlq}[1]{\lx@rrow{#1}{\le}}
+\newcommand*{\lxgq}[1]{\lx@rrow{#1}{\ge}}
+
+\newcommand*{\ximplies}[1]{\x@rrow{#1}{\implies}} %%%%% =>
+\newcommand*{\ximpliedby}[1]{\x@rrow{#1}{\impliedby}} %%%%%% <=
+\newcommand*{\xiff}[1]{\x@rrow{#1}{\iff}} %%%%%%%%%%%%% <=>
+\newcommand*{\xeq}[1]{\x@rrow{#1}{=}} %%%%%%% =
+\newcommand*{\xlq}[1]{\x@rrow{#1}{\le}} %%%%%%%
+
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+    \maketitle
+
+    \section{Formulate the problem}
+    Our distribution should start as a linear function \(f\) until time \(t_0\) and continue as an exponential function \(g\) until the end of time. The total budget shall be \(B\). Then the functions
+    \begin{align*}
+        f(x) & = a x+1\\
+        g(x) & = b \exp(cx)
+    \end{align*}
+    should satisfy:
+    \begin{align}
+        f(t_0) &= g(t_0) \label{cond 1}\\
+        f'(t_0) &= g'(t_0) \label{cond 2}\\
+        B &= \int_0^{t_0} f(x) dx + \int_{t_0}^\infty g(x)dx \label{cond 3}
+    \end{align}
+    \section{Solve for a,b and c}
+    Equation (\ref{cond 1}) implies:
+    \begin{align}
+        at_0 +1 = b \exp(c t_0) \label{res 1}
+    \end{align}
+    Equation (\ref{cond 2}) implies:
+    \begin{align}
+        &a = b c \exp(c t_0) \nonumber\\
+        \implies & \frac{a}{c} = b \exp(c t_0) \stackrel{(\ref{res 1})}{=} at_0 +1 \label{res 2}\\
+        \implies & a = cat_0 + c \nonumber\\
+        \implies & a - act_0 = c \nonumber\\
+        \implies & a(1-c t_0) =c \nonumber\\
+        \implies & a = \frac{c}{1-ct_0} \label{res 3}
+    \end{align}
+    Note that \(1-ct_0\ge1>0\), since \(c<0\) will be a necessary assumption for the integral to be finite (c.f. (\ref{c<0})), and \(t_0\ge 0\) simply means that the switch happens in the future.
+
+    \noindent (\ref{res 3}) in (\ref{res 2}):
+    \begin{align}
+        &b\exp(c t_0)\stackrel{(\ref{res 2})}=\frac{a}{c}\stackrel{(\ref{res 3})}{=} \frac{c}{c(1-ct_0)}\nonumber\\
+        \implies & b = \frac{\exp(-ct_0)}{1-ct_0} \label{res 4}
+    \end{align}
+    So we only have one unknown variable left, which is c. Equation (\ref{cond 3}) implies:
+    \begin{align}
+        B &= \int_0^{t_0} a x+1 dx + \int_{t_0}^\infty b\exp(cx)dx 
+        \nonumber\\
+        &= \left[\frac{a}{2}x^2 +x\right]_0^{t_0} + \left[\frac{b}{c} \exp(cx)\right]_{t_0}^\infty 
+        \nonumber\\
+        &=\frac{a}{2}{t_0}^2 +t_0- \frac{b}{c}\exp(c t_0)
+        \label{c<0}\\
+        &\lxeq{(\ref{res 4})} \frac{a}{2}{t_0}^2 +t_0-\frac{1}{c(1-ct_0)}
+        \nonumber \\
+        &\lxeq{(\ref{res 3})} \frac{c}{2(1-ct_0)}{t_0}^2 +t_0-\frac{1}{c(1-ct_0)} \nonumber
+    \end{align}
+    This implies:
+    \begin{align*}
+        &c(1-c t_0) B = c^2 \frac{{t_0}^2}{2} + c(1-c t_0)t_0 -1\\
+        \implies & cB - c^2t_0B = c^2\frac{{t_0}^2}{2} + ct_0 - c^2t_0^2 -1\\
+        \implies & c^2 \underbracket{\left(\frac{{t_0}^2}{2} - t_0^2 + t_0B\right)}_{= t_0 B - \frac{{t_0}^2}{2}} 
+        + c\left(t_0 -B \right) -1 = 0
+    \end{align*}
+    Which has solutions:
+    \begin{align}
+        c_{1/2} = \frac{B-t_0 \pm \sqrt{(B-t_0)^2 + 4 \left(t_0 B - \frac{{t_0}^2}{2}\right)}}{2 \left(t_0 B - \frac{{t_0}^2}{2}\right)}
+    \end{align}
+    As we assumed \(c<0\) in (\ref{c<0}), we need to ensure this condition is satisfied:
+
+\end{document}
