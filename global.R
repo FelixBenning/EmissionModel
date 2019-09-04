@@ -69,3 +69,13 @@ budgetAllocationInertiaText <- withMathJax(helpText(
           &= \\text{Global Budget in Years [years]}
         \\end{align}$$"
 ))
+
+budgetDistributionFunctionProperties <- withMathJax(
+  "$$\\begin{align}
+    (1) & \\qquad f(\\text{currentYear}) = 1 \\\\
+    (2) & \\qquad \\int_{\\text{currentYear}}^\\infty f(x)dx = \\text{total budget}
+    \\end{align}
+  $$"
+)
+
+linearFunctionAnsatz <- withMathJax("$$f(\\text{currentYear} + x) = ax+b.$$")

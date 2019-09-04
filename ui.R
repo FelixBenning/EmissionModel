@@ -57,7 +57,19 @@ fluidPage(
         tabPanel(
           "Details",
           uiOutput("globalBudget"),
-          uiOutput("euBudget")
+          uiOutput("euBudget"),
+          h3("Distribution Over Time"),
+          p("Since the total budget is now set, we are left with distributing the budget over time. 
+            Now the total amount of emissions equals the sum of all emissions over time. I.e. the are under the curve of yearly emissions.
+            Therefore we are looking for functions enclosing an area equal to our total budget."),
+          p("We also want our function to stat with the current emissions. (I.e. 100%=1 of current Emissions per year). 
+            So any valid distribution should have the following properties: "),
+          budgetDistributionFunctionProperties,
+          p("For a linear function of the form"),
+          linearFunctionAnsatz,
+          p("This has a unique result, as b is set by the first requirement and a by the second. Similarly the number of possible exponential functions is one.
+            In order to offer a compromise, the 'switch' function, starts as a linear function and switches to an exponential function at the set year.
+            (Detail: I ensured, that the swap was continuous and differentiable)")
         )
       )
     )
