@@ -11,12 +11,13 @@ function(input,output, session){
     }
   })
   
-  budgetInfo <- reactive({budgetEstimation[which(budgetEstimation$name == input$budgetName), ]})
+  budgetInfo <- reactive({budgetEstimation[which(budgetEstimation$name == input$budgetId), ]})
   
   worldBudget <- reactive({
-    if(input$budgetName == "Custom") {
+    req(input$budgetId)
+    if(input$budgetId == "Custom") {
       input$budgetGt
-    } else {
+    } else if (!is.null(input$budgetId)) {
       b <- budgetInfo()$budgetEstimation - (currentYearDecimal() - budgetInfo()$year)*input$yearlyGt
       b
     }
@@ -32,12 +33,8 @@ function(input,output, session){
   })
   
   switchYFromNow <- reactive({
-    if(is.null(input$switchYear)) {
-      2030 -currentYearDecimal()
-    } else {
-      input$switchYear-currentYearDecimal()
-    }
-    
+    req(input$switchYear)
+    input$switchYear-currentYearDecimal()
     })
   
   switchParams <- reactive({calcSwitchParams(euBudgY(), switchYFromNow())})
@@ -90,8 +87,24 @@ function(input,output, session){
     )
   })
   
+  output$budgetID <- renderUI({
+    selectInput(
+      inputId = "budgetId", 
+      label = "CO2 Budget Estimation for that Target", 
+      choices =  c(budgetEstimation[sprintf("%.1f°C", budgetEstimation$target) == input$target,]$name, "Custom"), 
+      selected = budgetEstimation$name[0]
+    )
+  })
+  
   output$switchLinExp <- renderUI({
-    sliderInput("switchYear", "Switch from linear to exponential", ceiling(currentYearDecimal()), floor(currentYearDecimal() + 2*euBudgY()), 2030, step = 0.5, sep="")
+    sliderInput(
+      inputId = "switchYear", 
+      label = "Switch from linear to exponential", 
+      min = ceiling(currentYearDecimal()), 
+      max = floor(currentYearDecimal() + 2*euBudgY()), 
+      value = 2030, 
+      step = 0.5, 
+      sep="")
   })
   
 }

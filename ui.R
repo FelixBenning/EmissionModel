@@ -1,27 +1,27 @@
 # ui.R
 
 fluidPage(
-  h1("Distribution of the Carbon Budget Over Time"),
+  h1("Distribution of the CO2 Budget Over Time"),
   sidebarLayout(
     sidebarPanel(
-      uiOutput("switchLinExp"),
-      selectInput(inputId = "budgetAllocation", label = "Budget Allocation", c("equal", "inertia")),
-      textOutput("allocationExplanation"),
-      br(),
       selectInput(
-        inputId = "budgetName", 
-        label = "Budget Estimation", 
-        choices =  c(budgetEstimation$name, "Custom"), 
-        selected = budgetEstimation$name[0]
+        inputId = "target",
+        label = "Temperature Target",
+        choices = sprintf("%.1f°C", budgetEstimation$target),
+        selected = budgetEstimation$target[0]
       ),
+      uiOutput("budgetID"),
       conditionalPanel(
-        "input.budgetName == 'Custom'",
+        "input.budgetId == 'Custom'",
         numericInput(
           inputId = "budgetGt",
           label = "Global budget in Gt CO2",
           value = 350
         )
       ),
+      selectInput(inputId = "budgetAllocation", label = "Budget Allocation", c("equal", "inertia")),
+      textOutput("allocationExplanation"),
+      br(),
       numericInput(
         inputId = "yearlyGt",
         label = "Global yearly production in Gt",
@@ -39,7 +39,8 @@ fluidPage(
           label = "EU Average CO2 per Capita",
           value = 6.4
         )
-      )
+      ),
+      uiOutput("switchLinExp")
     ),
     mainPanel(
       tabsetPanel(
