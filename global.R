@@ -40,6 +40,8 @@ currentYearDecimal <- function() {
   return(as.double(format(Sys.Date(), "%Y")) + as.double(format(Sys.Date(), "%m"))/12 + as.double(format(Sys.Date(), "%d"))/365)
 }
 
+yearlyBudgetEstimationText <- withMathJax(helpText("$$= \\frac{\\text{Global Budget[Gt]}}{\\text{Global Yearly Emissions[Gt/year]}}$$"))
+
 budgetAllocationEqualText <- withMathJax(helpText(
   "Equal Allocation: 
         $$\\begin{align}

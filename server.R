@@ -52,7 +52,7 @@ function(input,output, session){
        h4(sprintf("at the beginning of the year %.0f: %.0f Gt", budgetRow()$year , budgetRow()$budget)),
        h4(sprintf("now: %.0f Gt", worldBudget())),
        h4(sprintf("In years of current emissions: %.2f years", worldBudgetYears())),
-       withMathJax(helpText("$$= \\frac{\\text{Global Budget[Gt]}}{\\text{Global Yearly Emissions[Gt/year]}}$$"))
+      yearlyBudgetEstimationText
     )
   })
   allocationHelpText<-reactive({
