@@ -41,10 +41,62 @@ function(input,output, session){
   linParams <- reactive({calcLinParams(euBudgY())})
   expParams <- reactive({calcExpParams(euBudgY())})
   
-  
-  output$euBudgY <-renderText({
-    sprintf("Budget of EU: %.1f years of current EU CO2 production", euBudgY())
+  budgetRow <-reactive({
+    budgetEstimation[budgetEstimation$name == input$budgetId,]
   })
+ 
+  output$globalBudget <- renderUI({
+    tagList(
+      h3("Global CO2 Budget"), 
+      " according to ", a(href=budgetRow()$source, input$budgetId), "in order to limit warming to ", budgetRow()$target, "°C",
+       h4(sprintf("at the beginning of the year %.0f: %.0f Gt", budgetRow()$year , budgetRow()$budget)),
+       h4(sprintf("now: %.0f Gt", worldBudget())),
+       h4(sprintf("In years of current emissions: %.2f years", worldBudgetYears())),
+       withMathJax(helpText("$$= \\frac{\\text{Global Budget[Gt]}}{\\text{Global Yearly Emissions[Gt/year]}}$$"))
+    )
+  })
+  allocationHelpText<-reactive({
+    if(input$budgetAllocation == "equal"){
+      withMathJax(helpText(
+        "Equal Allocation: 
+        $$\\begin{align}
+          &\\text{Carbon Budget per Person [t/person]} \\\\ 
+          &= \\text{Global Budget in Years [years]}\\times \\text{World Average Emissions[t/(year $\\times$ person)]}
+        \\end{align} $$ 
+        thus
+        $$\\begin{align}
+          &\\text{EU Budget in Years [years]} \\\\
+          &= \\frac{\\text{Carbon Budget per Person [t/person]}}{\\text{EU Average Emissions[t/(year $\\times$ person)]}} \\\\
+          &= \\text{Global Budget in Years [years]} 
+          \\frac{\\text{World Average Emissions[t/(year $\\times$ person)]}}{\\text{EU Average Emissions[t/(year $\\times$ person)]}}
+        \\end{align}$$"
+      ))
+    } else if(input$budgetAllocation == "inertia"){
+      withMathJax(helpText(
+        "Inertia Allocation: 
+         
+        $$\\begin{align}
+          &\\text{EU Budget [Gt]} \\\\
+          &= \\text{Global Budget [Gt]} \\frac{\\text{EU Average Emissions[t/(year $\\times$ person)]}}{\\text{World Average Emissions[t/(year $\\times$ person)]}} \\\\
+        \\end{align}$$
+        thus
+        $$\\begin{align}
+          &\\text{EU Budget in Years [years]} \\\\
+          &= \\frac{\\text{EU Budget [Gt]}}{\\text{EU Average Emissions[t/(year $\\times$ person)]}} \\\\
+          &= \\frac{\\text{Global Budget [Gt]}}{\\text{World Average Emissions[t/(year $\\times$ person)]}}\\\\
+          &= \\text{Global Budget in Years [years]}
+        \\end{align}$$"
+      ))
+    }
+  })
+  output$euBudget <- renderUI({
+    tagList(
+      h3("EU CO2 Budget"),
+      h4(sprintf("In years of current EU emission: %.2f years", euBudgY())),
+      allocationHelpText()
+    )
+  })
+  
   
   output$plot<-renderPlot({
     

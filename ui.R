@@ -24,7 +24,7 @@ fluidPage(
       br(),
       numericInput(
         inputId = "yearlyGt",
-        label = "Global yearly production in Gt",
+        label = "Global Yearly Emissions in Gt",
         value = 42
       ),
       conditionalPanel(
@@ -56,7 +56,8 @@ fluidPage(
         ),
         tabPanel(
           "Details",
-          textOutput("euBudgY")
+          uiOutput("globalBudget"),
+          uiOutput("euBudget")
         )
       )
     )
