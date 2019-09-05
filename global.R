@@ -4,11 +4,14 @@ library(jsonlite)
 budgetEstimation <- read_json("budgetEstimations.json", simplifyVector = TRUE)
 
 calcSwitchParams <-function(budgetYears, switchTime) {
-  logBase <- (budgetYears-switchTime-sqrt((budgetYears-switchTime)^2+4*(switchTime*budgetYears-switchTime^2/2)))/(2*switchTime*budgetYears-switchTime^2)
-  linFactor <- logBase/(1-logBase*switchTime)
-  expFactor <- exp(-logBase*switchTime)/(1-logBase*switchTime)
+  rootTempVar <- sqrt((budgetYears-switchTime)^2+4*switchTime*(budgetYears-switchTime/2))
+  denominator<- switchTime*(budgetYears + rootTempVar)
   
-  params <- data.frame(linFactor = linFactor, logBase = logBase, expFactor = expFactor)
+  linFactor <- budgetYears/denominator - 1/(budgetYears + rootTempVar) - rootTempVar/denominator
+  switchValue<- linFactor*switchTime + 1
+  logBase <- linFactor/switchValue
+  
+  params <- data.frame(linFactor = linFactor, logBase = logBase, switchValue = switchValue)
   return(params)
 }
 
@@ -25,7 +28,7 @@ calcExpParams <- function(budgetYears) {
 }
 
 switchFunc <- function(x, switchTime, params) {
-  y <- (x<switchTime)*(params$linFactor*x+1) + (x>=switchTime)*params$expFactor*exp(params$logBase*x)
+  y <- (x<switchTime)*(params$linFactor*x+1) + (x>=switchTime)*params$switchValue*exp(params$logBase*(x-switchTime))
 }
 
 linearFunc <- function(x, params) {

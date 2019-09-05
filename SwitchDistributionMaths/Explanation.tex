@@ -2,8 +2,10 @@
 \title{Switch Distribution}
 \author{Felix Benning}
 
+\usepackage{amssymb}
 \usepackage{mathtools}
-
+\usepackage{ stmaryrd }
+\usepackage{algpseudocode, algorithm,algorithmicx}
 %%%%%%%%%%%%%%%%%%%%% ARROWS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatletter
 %arrow with explanation 
@@ -66,13 +68,13 @@
         \implies & a = cat_0 + c \nonumber\\
         \implies & a - act_0 = c \nonumber\\
         \implies & a(1-c t_0) =c \nonumber\\
-        \implies & a = \frac{c}{1-ct_0} \label{res 3}
+        \implies & a = \frac{c}{1-ct_0} \label{res a}
     \end{align}
     Note that \(1-ct_0\ge1>0\), since \(c<0\) will be a necessary assumption for the integral to be finite (c.f. (\ref{c<0})), and \(t_0\ge 0\) simply means that the switch happens in the future.
 
-    \noindent (\ref{res 3}) in (\ref{res 2}):
+    \noindent (\ref{res a}) in (\ref{res 2}):
     \begin{align}
-        &b\exp(c t_0)\stackrel{(\ref{res 2})}=\frac{a}{c}\stackrel{(\ref{res 3})}{=} \frac{c}{c(1-ct_0)}\nonumber\\
+        &b\exp(c t_0)\stackrel{(\ref{res 2})}=\frac{a}{c}\stackrel{(\ref{res a})}{=} \frac{c}{c(1-ct_0)}\nonumber\\
         \implies & b = \frac{\exp(-ct_0)}{1-ct_0} \label{res 4}
     \end{align}
     So we only have one unknown variable left, which is c. Equation (\ref{cond 3}) implies:
@@ -85,7 +87,7 @@
         \label{c<0}\\
         &\lxeq{(\ref{res 4})} \frac{a}{2}{t_0}^2 +t_0-\frac{1}{c(1-ct_0)}
         \nonumber \\
-        &\lxeq{(\ref{res 3})} \frac{c}{2(1-ct_0)}{t_0}^2 +t_0-\frac{1}{c(1-ct_0)} \nonumber
+        &\lxeq{(\ref{res a})} \frac{c}{2(1-ct_0)}{t_0}^2 +t_0-\frac{1}{c(1-ct_0)} \nonumber
     \end{align}
     This implies:
     \begin{align*}
@@ -95,9 +97,69 @@
         + c\left(t_0 -B \right) -1 = 0
     \end{align*}
     Which has solutions:
-    \begin{align}
+    \[
         c_{1/2} = \frac{B-t_0 \pm \sqrt{(B-t_0)^2 + 4 \left(t_0 B - \frac{{t_0}^2}{2}\right)}}{2 \left(t_0 B - \frac{{t_0}^2}{2}\right)}
+    \]
+    As we assumed \(c<0\) in (\ref{c<0}), we need to ensure this condition is satisfied. After a case by case analysis of the cases \(t_0 \lessgtr 2B\), it becomes clear that this is only satisfied for \(t_0\le 2B\) and
+    \begin{align}
+        c = \frac{B-t_0 - \sqrt{(B-t_0)^2 + 4 \left(t_0 B - \frac{{t_0}^2}{2}\right)}}{2 \left(t_0 B - \frac{{t_0}^2}{2}\right)} \label{res c}
     \end{align}
-    As we assumed \(c<0\) in (\ref{c<0}), we need to ensure this condition is satisfied:
+
+    \section{Numerical Stability}
+    While the current parameters are correct, their formulas appear to be numerically unstable. For this reason simplify (\ref{res c}) to
+    \begin{align}
+        c= \frac{B-t_0 - \sqrt{(B-t_0)^2 + 2 t_0(2B - t_0)}}{t_0 (2B -t_0)}
+    \end{align}
+    and notice that the denominator approaches zero for \(t_0 \to 2B\). This implies c approaches infinity. For this reason \(a\) (see (\ref{res a})) is unstable, and we rewrite it as:
+    \begin{align*}
+        a &= \frac{c}{1-ct_0}\\
+        &= \frac{1}{\frac{1}{c} - t_0}\\
+        &\lxeq{(\ref{res c})} \frac{1}{
+            \frac{t_0 (2B -t_0)}{B-t_0 - \sqrt{(B-t_0)^2 + 2 t_0(2B - t_0)}} 
+            - t_0
+        }\\
+        & = \frac{B-t_0 - \sqrt{(B-t_0)^2 + 2 t_0(2B - t_0)}}{t_0 \left(
+            (2B -t_0)
+            - \left(B-t_0 - \sqrt{(B-t_0)^2 + 2 t_0(2B - t_0)}\right) \right)
+        }\\
+        & = \frac{B-t_0 - \sqrt{(B-t_0)^2 + 2 t_0(2B - t_0)}}{t_0 \left(
+            B + \sqrt{(B-t_0)^2 + 2 t_0(2B - t_0)} \right)
+        }\\ 
+        &= \frac{B}{t_0(B + \text{rootTempVar})} - \frac{1}{B + \text{rootTempVar}} - \frac{\text{rootTempVar}}{t_0(B + \text{rootTempVar})}
+    \end{align*}
+    With 
+    \[
+        \text{rootTempVar} \coloneqq \sqrt{(B-t_0)^2 + 2 t_0(2B - t_0)}
+    \]
+    As we need to calculate
+    \[
+        f(t_0) = a t_0 +1 \eqqcolon \text{switchValue}
+    \]
+    The calculation of b can be avoided entirely, since:
+    \begin{align*}
+        g(x) = b \exp(c x) = \underbracket{b \exp(c t_0)}_{=g(t_0)=f(t_0)}\exp(c(x-t_0))
+    \end{align*}
+    And c can be calculated as (cf. (\ref{res 2})):
+    \begin{align*}
+        c = \frac{a}{b \exp(c t_0)} = \frac{a}{f(t_0)}
+    \end{align*}
+    \clearpage
+    \section{Algorithm}
+    \begin{algorithm}
+        \caption{calcSwitchParams(B, \(t_0\))}
+        \begin{algorithmic}[1]
+            \State \(\text{rootTempVar} \gets sqrt{(B-t_0)^2 + 2 t_0(2B - t_0)}\)
+            \State \(\text{denominator} \gets  t_0(B + \text{rootTempVar})\)
+            \State
+            \State \(a = \text{linFactor} 
+            \gets \frac{B}{\text{denominator}} - \frac{1}{B + \text{rootTempVar}} - \frac{\text{rootTempVar}}{\text{denominator}}\)
+            \State \(f(t_0) = \text{switchValue}  \gets \text{linFactor}\times t_0 +1\)
+            \State \(c = \text{logBase}  \gets \frac{a}{\text{linFactor}}\)
+            \State 
+            \State \Return data.frame(
+            \State    linFactor = linFactor, logBase = logBase, switchValue = switchValue
+            \State )
+        \end{algorithmic}
+    \end{algorithm}
 
 \end{document}
