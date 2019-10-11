@@ -70,6 +70,11 @@ fluidPage(
           p("This has a unique result, as b is set by the first requirement and a by the second. Similarly the number of possible exponential functions is one.
             In order to offer a compromise, the 'switch' function, starts as a linear function and switches to an exponential function at the set year."),
           a(href="https://github.com/FelixBenning/EmissionModel/tree/master/SwitchDistributionMaths/Explanation.pdf", target="_blank", "(Details: I ensured, that the swap was continuous and differentiable)")
+        ),
+        tabPanel(
+          "Export",
+          downloadButton("downloadData", "Download"),
+          tableOutput("table")
         )
       )
     )

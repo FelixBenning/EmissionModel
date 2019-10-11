@@ -67,14 +67,21 @@ function(input,output, session){
   expParams <- reactive({calcExpParams(euBudgY())})
  
   ## Plot Tab ##
-  output$plot<-renderPlot({
+  dataFrame<-reactive({
     t<-seq(0,40,length=500)
     linear <- linearFunc(t, linParams())
     switch <- switchFunc(t, switchYFromNow(), switchParams())
     expon <- expFunc(t, expParams())
     
     df<-data.frame(year=t+currentYearDecimal(), linear=linear*100, switch = switch*100, expon = expon*100)
-    ggplot(df)+
+  })
+  
+  output$table<-renderTable({
+    dataFrame()
+  })
+  
+  output$plot<-renderPlot({
+    ggplot(dataFrame())+
       geom_line(aes(x=year, y=linear, colour = "linear"))+
       geom_line(aes(x=year, y=switch, colour = "switch"))+
       geom_line(aes(x=year, y=expon, color="exponential"))+
@@ -133,4 +140,13 @@ function(input,output, session){
     )
   })
   
+  ##Export Tab##
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste("co2BudgetDistribution", ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(dataFrame(), file, row.names = FALSE)
+    }
+  )
 }
