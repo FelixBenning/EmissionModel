@@ -13,8 +13,9 @@ function(input,output, session){
       selected = budgetEstimation$name[0]
     )
   })
+  
 
-    output$allocationExplanation <- renderText({
+  output$allocationExplanation <- renderText({
     if(input$budgetAllocation == "equal") {
       "Every person on earth gets an equal share of the remaining budget."
     } else {
@@ -33,16 +34,16 @@ function(input,output, session){
       sep="")
   })
 
-  ## reacitive Variables ##
+  ## reactive Variables ##
   budgetEntry <- reactive({
     budgetEstimation[budgetEstimation$name == input$budgetId, ]
   })
   
   worldBudget <- reactive({
     req(input$budgetId)
-    if (!is.null(input$budgetId)) {
+    if (input$budgetId != "Custom") {
       b <- budgetEntry()$budgetEstimation - (currentYearDecimal() - budgetEntry()$year)*input$yearlyGt
-    } else if(input$budgetId == "Custom") {
+    } else {
       input$budgetGt
     } 
   })

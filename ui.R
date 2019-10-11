@@ -7,7 +7,7 @@ fluidPage(
       selectInput(
         inputId = "target",
         label = "Temperature Target",
-        choices = sprintf("%.1f°C", budgetEstimation$target),
+        choices = c(sprintf("%.1f°C", budgetEstimation$target), "Custom"),
         selected = budgetEstimation$target[0]
       ),
       uiOutput("budgetID"),
