@@ -24,7 +24,7 @@ fluidPage(
       br(),
       numericInput(
         inputId = "yearlyGt",
-        label = "Global Yearly Emissions in Gt",
+        label = "Global Yearly (Net) Emissions in Gt",
         value = 42
       ),
       conditionalPanel(
@@ -69,7 +69,10 @@ fluidPage(
           linearFunctionAnsatz,
           p("This has a unique result, as b is set by the first requirement and a by the second. Similarly the number of possible exponential functions is one.
             In order to offer a compromise, the 'switch' function, starts as a linear function and switches to an exponential function at the set year."),
-          a(href="https://github.com/FelixBenning/EmissionModel/tree/master/SwitchDistributionMaths/Explanation.pdf", target="_blank", "(Details: I ensured, that the swap was continuous and differentiable)")
+          a(href="https://github.com/FelixBenning/EmissionModel/tree/master/SwitchDistributionMaths/Explanation.pdf", target="_blank", "(Details: I ensured, that the swap was continuous and differentiable)"),
+          p("If you find any issues you can write an issue in github:"),
+          a(href="https://github.com/FelixBenning/EmissionModel/issues", target="_blank", "Github Page"),
+          p("You are also welcome to contribute features yourself!")
         ),
         tabPanel(
           "Export",

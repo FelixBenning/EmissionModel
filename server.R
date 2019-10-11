@@ -76,10 +76,6 @@ function(input,output, session){
     df<-data.frame(year=t+currentYearDecimal(), linear=linear*100, switch = switch*100, expon = expon*100)
   })
   
-  output$table<-renderTable({
-    dataFrame()
-  })
-  
   output$plot<-renderPlot({
     ggplot(dataFrame())+
       geom_line(aes(x=year, y=linear, colour = "linear"))+
@@ -149,4 +145,8 @@ function(input,output, session){
       write.csv(dataFrame(), file, row.names = FALSE)
     }
   )
+  
+  output$table<-renderTable({
+    dataFrame()
+  })
 }
