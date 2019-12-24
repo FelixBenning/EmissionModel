@@ -40,7 +40,19 @@ expFunc <- function(x, params) {
 }
 
 currentYearDecimal <- function() {
-  return(as.double(format(Sys.Date(), "%Y")) + as.double(format(Sys.Date(), "%m"))/12 + as.double(format(Sys.Date(), "%d"))/365)
+  return(as.double(format(Sys.Date(), "%Y")) + (as.double(format(Sys.Date(), "%m"))-1)/12 + (as.double(format(Sys.Date(), "%d"))-1)/365)
+}
+
+getTimeSeries<- function() {
+  roundedYear<-ceiling(currentYearDecimal())
+  beforeRoundedYear<-rev(seq(from=roundedYear, to=currentYearDecimal(), by=-1/12))
+  afterRoundedYear<-seq(from=roundedYear+1/12, to=currentYearDecimal()+40, by=1/12)
+  yeardecimal<-c(beforeRoundedYear, afterRoundedYear)
+  t<-yeardecimal-currentYearDecimal()
+  df<-data.frame(yeardecimal=yeardecimal, t=t)
+  df$year=as.integer(floor(df$yeardecimal))
+  df$month=as.integer(round((df$yeardecimal-df$year)*12+1))
+  return(df)
 }
 
 yearlyBudgetEstimationText <- withMathJax(helpText("$$= \\frac{\\text{Global Budget[Gt]}}{\\text{Global Yearly Emissions[Gt/year]}}$$"))

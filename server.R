@@ -67,20 +67,29 @@ function(input,output, session){
   expParams <- reactive({calcExpParams(euBudgY())})
  
   ## Plot Tab ##
+  timeSeries<-reactive({
+    getTimeSeries()
+  })
+  
   dataFrame<-reactive({
-    t<-seq(0,40,length=500)
+    t<-timeSeries()$t
     linear <- linearFunc(t, linParams())
     switch <- switchFunc(t, switchYFromNow(), switchParams())
     expon <- expFunc(t, expParams())
-    
-    df<-data.frame(year=t+currentYearDecimal(), linear=linear*100, switch = switch*100, expon = expon*100)
+    df<-data.frame(
+      yeardecimal=timeSeries()$yeardecimal,
+      year=timeSeries()$year,
+      month=timeSeries()$month,
+      linear=linear*100, 
+      switch = switch*100, 
+      expon = expon*100)
   })
   
   output$plot<-renderPlot({
     ggplot(dataFrame())+
-      geom_line(aes(x=year, y=linear, colour = "linear"))+
-      geom_line(aes(x=year, y=switch, colour = "switch"))+
-      geom_line(aes(x=year, y=expon, color="exponential"))+
+      geom_line(aes(x=yeardecimal, y=linear, colour = "linear"))+
+      geom_line(aes(x=yeardecimal, y=switch, colour = "switch"))+
+      geom_line(aes(x=yeardecimal, y=expon, color="exponential"))+
       ylim(0,100)+
       labs(x = "year", y = "emissions as percentage of current yearly emissions", colour = "type")
   })
