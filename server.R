@@ -17,9 +17,9 @@ function(input,output, session){
 
   output$allocationExplanation <- renderText({
     if(input$budgetAllocation == "equal") {
-      "Every person on earth gets an equal share of the remaining budget."
+      "Every person on earth gets an equal share of the remaining budget. This does not account for historical emissions or population growth."
     } else {
-      "Countries get a share of the total budget proportional to their current production."
+      "Countries get a share of the total budget proportional to their current emissions. E.g. if a country causes 20% of current emissions it gets 20% of the remaining budget"
     }
   })
   
