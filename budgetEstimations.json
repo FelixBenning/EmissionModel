@@ -1,5 +1,26 @@
 [
     {
+        "name": "Carbon Brief - 67% probability",
+        "source": "https://www.carbonbrief.org/guest-post-refining-the-remaining-1-5c-carbon-budget",
+        "year": 2020,
+        "budgetEstimation": 230,
+        "target": 1.5
+    },
+    {
+        "name": "Carbon Brief - 50% probability",
+        "source": "https://www.carbonbrief.org/guest-post-refining-the-remaining-1-5c-carbon-budget",
+        "year": 2020,
+        "budgetEstimation": 440,
+        "target": 1.5
+    },
+    {
+        "name": "Carbon Brief - 33% probability",
+        "source": "https://www.carbonbrief.org/guest-post-refining-the-remaining-1-5c-carbon-budget",
+        "year": 2020,
+        "budgetEstimation": 670,
+        "target": 1.5
+    },
+    {
         "name": "IPCC-AR5 66% Probability",
         "source": "https://www.ipcc.ch/sr15/chapter/spm/spm-c/",
         "year": 2018,
