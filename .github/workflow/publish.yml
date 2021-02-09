@@ -19,6 +19,6 @@ jobs:
         shell: Rscript {0}
       - name: Push to shiny.io
         run: |
-          rsconnect::setAccountInfo(name=${{ secrets.SHINYAPPS_USERNAME }}, token=${{secrets.SHINYAPPS_TOKEN}}, secret=${{secrets.SHINYAPPS_SECRET}})
+          rsconnect::setAccountInfo(name='${{ secrets.SHINYAPPS_USERNAME }}', token='${{secrets.SHINYAPPS_TOKEN}}', secret='${{secrets.SHINYAPPS_SECRET}}')
           rsconnect::deployApp()
         shell: Rscript {0}
