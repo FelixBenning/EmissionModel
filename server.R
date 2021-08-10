@@ -9,8 +9,8 @@ function(input,output, session){
     selectInput(
       inputId = "budgetId", 
       label = "CO2 Budget Estimation for that Target", 
-      choices =  c(budgetEstimation[sprintf("%.1f°C", budgetEstimation$target) == input$target,]$name, "Custom"), 
-      selected = budgetEstimation$name[0]
+      choices =  c(budgetList()$name, "Custom"), 
+      selected = budgetEstimation$name[1]
     )
   })
   
@@ -35,8 +35,11 @@ function(input,output, session){
   })
 
   ## reactive Variables ##
+  budgetList <- reactive({
+    budgetEstimation[sprintf("%.1f°C", budgetEstimation$target) == input$target,]
+  })
   budgetEntry <- reactive({
-    budgetEstimation[budgetEstimation$name == input$budgetId, ]
+    budgetList()[budgetList()$name == input$budgetId, ]
   })
   
   worldBudget <- reactive({

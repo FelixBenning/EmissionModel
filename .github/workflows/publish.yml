@@ -15,7 +15,7 @@ jobs:
           r-version: '3.5.3'
       - name: Install shiny
         run: |
-          install.packages(c("shiny", "rsconnect", "RColorBrewer", "cli", "colorspace", "ellipsis", "fansi", "farver", "ggplot2", "glue"), type= 'binary')
+          install.packages(c("shiny", "rsconnect", "ggplot2"), type= 'binary')
         shell: Rscript {0}
       - name: Push to shiny.io
         run: |
