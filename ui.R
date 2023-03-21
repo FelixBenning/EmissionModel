@@ -24,8 +24,8 @@ fluidPage(
       br(),
       numericInput(
         inputId = "yearlyGt",
-        label = "Global Yearly (Net) Emissions in Gt",
-        value = 42
+        label = "Global Yearly (Net) Emissions in Gt CO2-eq",
+        value = 59
       ),
       conditionalPanel(
         "input.budgetAllocation == 'equal'",
